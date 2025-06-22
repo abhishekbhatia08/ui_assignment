@@ -50,14 +50,20 @@ class DashboardScreen extends StatelessWidget {
                           child: Text('Generate Boxes'),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text('Boxes Grid', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      Visibility(
+                        visible: state.error == null,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text('Boxes Grid', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                        ),
                       ),
                       _buildBoxDisplay(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text('C Shape', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      Visibility(
+                        visible: state.error == null,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text('C Shape', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                        ),
                       ),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
