@@ -30,7 +30,6 @@ class DashboardScreen extends StatelessWidget {
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(2),
-                          // Limit to 2 digits
                         ],
                         decoration: InputDecoration(
                           labelText: 'Enter a number',
@@ -42,26 +41,32 @@ class DashboardScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 20,
-                          horizontal: 16,
+                          horizontal: 8,
                         ),
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => context
-                                  .read<DashboardCubit>()
-                                  .generateBoxes(),
-                              child: Text('Generate Boxes'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => context
-                                  .read<DashboardCubit>()
-                                  .generateBoxes(),
-                              child: Text('Generate Boxes in C Shape'),
-                            ),
-                          ],
+                        child: ElevatedButton(
+                          onPressed: () => context
+                              .read<DashboardCubit>()
+                              .generateBoxes(),
+                          child: Text('Generate Boxes'),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text('Boxes Grid', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      ),
                       _buildBoxDisplay(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text('C Shape', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: generateCShape(context, state),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -111,5 +116,52 @@ class DashboardScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<Widget> generateCShape(BuildContext context, DashboardState state) {
+    List<Widget> boxes = List.generate(state.numberOfBoxes, (index) {
+      return CustomBox(
+        onTap: () => context.read<DashboardCubit>().boxClicked(index),
+        id: index,
+        color: state.clickOrder.contains(index)
+            ? AppColors.greenColor
+            : AppColors.redColor,
+      );
+    });
+
+    int n = boxes.length;
+
+    // Determine row length (max possible, keeping colLen at least 1)
+    int rowLen = (n / 3).ceil();
+    int colLen = n - 2 * rowLen;
+
+    if (colLen <= 0) {
+      rowLen = (n - 1) ~/ 2;
+      colLen = n - 2 * rowLen;
+    }
+
+    final topRow = boxes.take(rowLen).toList();
+    final middle = boxes.skip(rowLen).take(colLen).toList();
+    final bottomRow = boxes.skip(rowLen + colLen).toList();
+
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        spacing: 5,
+        children: topRow,
+      ),
+      SizedBox(height: 5),
+      Column(
+        spacing: 5,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: middle,
+      ),
+      SizedBox(height: 5),
+      Row(
+        spacing: 5,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: bottomRow,
+      ),
+    ];
   }
 }
